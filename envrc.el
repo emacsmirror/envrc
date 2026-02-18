@@ -369,9 +369,9 @@ also appear in PAIRS."
   "Update BUF with RESULT, which is a result of `envrc--export'."
   (with-current-buffer buf
     (setq-local envrc--status (if (listp result) 'on result))
+    (envrc--clear buf)
     (if (memq result '(none error))
         (progn
-          (envrc--clear buf)
           (envrc--debug "[%s] reset environment to default" buf))
       (envrc--debug "[%s] applied merged environment" buf)
       (let* ((remote (when-let* ((fn (buffer-file-name buf)))
