@@ -390,15 +390,15 @@ also appear in PAIRS."
         (if remote
             (setq-local envrc--remote-path parsed-path)
           (setq-local exec-path parsed-path))
-        (when (derived-mode-p 'eshell-mode)
-          (if (fboundp 'eshell-set-path)
-              (eshell-set-path path)
-            (setq-local eshell-path-env path)))
-        (when-let* ((info-path (getenv-internal "INFOPATH" env)))
-          (setq-local Info-directory-list
-                      (append (seq-filter #'identity (parse-colon-path info-path))
-                              (when (boundp 'Info-directory-list)
-                                (default-value 'Info-directory-list)))))))))
+        (cond ((derived-mode-p 'eshell-mode)
+               (if (fboundp 'eshell-set-path)
+                   (eshell-set-path path)
+                 (setq-local eshell-path-env path)))
+              ((derived-mode-p 'Info-mode)
+               (when-let* ((info-path (getenv-internal "INFOPATH" env)))
+                 (setq-local Info-directory-list
+                             (append (seq-filter #'identity (parse-colon-path info-path))
+                                     (default-value 'Info-directory-list))))))))))
 
 (defun envrc--update-env (env-dir)
   "Refresh the state of the direnv in ENV-DIR and apply in all relevant buffers."
